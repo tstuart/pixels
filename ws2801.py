@@ -89,7 +89,13 @@ class TimPixels:
             self.UpdateLights()
             time.sleep(wait)
         
-    
+    def Flash(self, firstColor, secondColor, delay, times):
+        for i in range(times):
+            self.AlternateLights(firstColor, secondColor)
+            time.sleep(delay)
+            self.AlternateLights(secondColor, firstColor)
+            time.sleep(delay)
+            
 
                                
 
