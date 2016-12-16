@@ -70,7 +70,26 @@ class TimPixels:
         time.sleep(delay)
         self.ClearLights()
                 
+    # used for rainbow.  I copied from andy-pi
+    def Wheel(self, WheelPos):
+        WheelPos =  int(WheelPos)
+        if (WheelPos < 85):
+            return TimColor(WheelPos * 3, 255 - WheelPos * 3, 0)
+        elif (WheelPos < 170):
+            WheelPos -= 85
+            return TimColor(255 - WheelPos * 3, 0, WheelPos * 3)
+        else:
+            WheelPos -= 170
+            return TimColor(0, WheelPos * 3, 255 - WheelPos * 3)
 
+    def RainbowCycle(self, wait):
+        for j in range(256):
+            for i in range(len(self.pixels)):
+                self.SetPixelColor(i, self.Wheel(((i * 256 / len(self.pixels)) + j) % 256))
+            self.UpdateLights()
+            time.sleep(wait)
+        
+    
 
                                
 
