@@ -15,6 +15,21 @@ class TimPixels:
         for i in range(numberOfPixels):
             self.pixels.append(TimColor(0, 0, 0))
 
+        #create some initial colors for demo
+        self.cBlue = TimColor(0, 255, 255)
+        self.cFuchsia = TimColor(255, 0, 255)
+        self.cGreen = TimColor(0, 255, 0)
+        self.cRed = TimColor(255, 0, 0)
+        self.cWhite = TimColor(255, 255, 255)
+        self.cYellow = TimColor(255, 255, 0)
+        self.demoColors = [
+            self.cBlue,
+            self.cFuchsia,
+            self.cGreen,
+            self.cRed,
+            self.cWhite,
+            self.cYellow]
+        
         # initialize spi and open
         self.spi = spidev.SpiDev()
         self.spi.open(0, 0)
@@ -95,6 +110,37 @@ class TimPixels:
             time.sleep(delay)
             self.AlternateLights(secondColor, firstColor)
             time.sleep(delay)
+
+    def ChaseToggle(self, lightIndex, leadLightIndex, numOfLights, color):
+        offColor = TimColor(0, 0, 0)
+
+        if ((lightIndex <= leadLightIndex and lightIndex > (leadLightIndex - numOfLights)) or lightIndex > (leadLightIndex + (len(self.pixels) - numOfLights))):
+            self.SetPixelColor(lightIndex, color)
+        else:
+            self.SetPixelColor(lightIndex, offColor)
+
+    def Chase(self, colors, numLights, numOfTimes, delay):
+        self.ClearLights()
+        leadLight = 0
+        for i in range(numOfTimes):
+            for frame in range(len(self.pixels)):
+                for l in range(len(self.pixels)):
+                    self.ChaseToggle(l, leadLight, numLights, colors[i % len(colors)])
+                self.UpdateLights()
+                time.sleep(delay)
+                leadLight += 1
+                if (leadLight > (len(self.pixels) - 1)):
+                    leadLight = 0
+        self.ClearLights()
+        
+    def LightDemo(self):
+        for i in range(10):
+            self.RainbowCycle(0.005)
+        self.ClearLights()
+        self.Chase(self.demoColors, 10, 20, 0.005)
+        self.Flash(self.cYellow, self.cFuchsia, 0.25, 50)
+        self.Flash(self.cRed, self.cGreen, 0.25, 50)
+        self.ClearLights()
             
 
                                
